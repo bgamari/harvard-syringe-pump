@@ -3,6 +3,8 @@
 import serial
 import logging
 
+#logging.basicConfig(level=logging.DEBUG)
+
 class Pump:
         prompts = {
                 ':': 'stopped',
@@ -32,6 +34,7 @@ class Pump:
 
                 s += self.port.readline()
                 logging.info('oops: %s' % s)
+                self._read_reply()
                 if s.startswith("OOR"):
                         raise Exception("Out of range")
                 elif s.startswith("?"):
@@ -76,6 +79,7 @@ class Pump:
                 self.port.read(2) # Read CR/LF
                 range = self.port.read(4)
                 self.port.read(2) # Read CR/LF
+                self._read_reply()
                 return ranges[range]
 
 

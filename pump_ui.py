@@ -17,7 +17,6 @@ class PumpWindow(object):
                 self.range_store = self.builder.get_object('range_store')
                 self.win.show_all()
 
-                self.update_units()
                 self.poll_status()
                 diam = self.pump.get_diameter()
                 self.builder.get_object('diameter').set_value(diam)
@@ -48,7 +47,7 @@ class PumpWindow(object):
                 status = None
                 img = 'gtk-no'
                 try:
-                        status = "Connected to %s" % self.pump.get_version()
+                        status = "Connected to pump version %s" % self.pump.get_version()
                         img = 'gtk-yes'
                 except:
                         status = "Not connected"
@@ -68,8 +67,10 @@ class PumpWindow(object):
 
         def direction_changed_cb(self, action, value):
                 status = self.pump.get_status()
-                if status == 'running' and value == -1 or \
-                   status == 'reverse' and value == +1 or \
+                dir = action.get_current_value()
+                print status, dir
+                if status == 'running' and dir == -1 or \
+                   status == 'reverse' and dir == +1 or \
                    status == 'stalled':
                         self.pump.reverse()
                         
@@ -104,9 +105,6 @@ class PumpWindow(object):
 
         def range_changed_cb(self, combo):
                 self.set_flow_rate()
-                self.update_units()
-                
-        def update_units(self):
                 iter = self.builder.get_object('range').get_active_iter()
                 flow_unit = self.range_store.get_value(iter, 0)
                 vol_unit = self.range_store.get_value(iter, 1)
