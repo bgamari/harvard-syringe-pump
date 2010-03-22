@@ -145,8 +145,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
-                    <property name="related_action">dir_forward_action</property>
                     <property name="use_action_appearance">True</property>
+                    <property name="related_action">dir_forward_action</property>
                     <property name="draw_indicator">True</property>
                     <property name="group">dir_backward</property>
                   </object>
@@ -159,10 +159,9 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
-                    <property name="related_action">dir_backward_action</property>
                     <property name="use_action_appearance">True</property>
+                    <property name="related_action">dir_backward_action</property>
                     <property name="draw_indicator">True</property>
-                    <property name="group">dir_forward</property>
                   </object>
                   <packing>
                     <property name="position">1</property>
@@ -186,8 +185,8 @@
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
-            <property name="related_action">run_action</property>
             <property name="use_action_appearance">True</property>
+            <property name="related_action">run_action</property>
             <property name="image">image2</property>
           </object>
           <packing>
@@ -274,8 +273,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <property name="related_action">clear_volume_action</property>
                     <property name="use_action_appearance">True</property>
+                    <property name="related_action">clear_volume_action</property>
                     <property name="use_stock">True</property>
                   </object>
                   <packing>
@@ -337,15 +336,6 @@
                   </packing>
                 </child>
                 <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
                   <object class="GtkSpinButton" id="diameter">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
@@ -383,6 +373,15 @@
                     <property name="top_attach">1</property>
                     <property name="bottom_attach">2</property>
                   </packing>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
                 </child>
               </object>
             </child>
