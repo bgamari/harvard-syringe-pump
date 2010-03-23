@@ -4,12 +4,14 @@
 import gtk, glib
 import pump
 
+resource_dir = os.path.join(sys.prefix, 'share', 'harvard_syringe_pump')
 class PumpWindow(object):
         def __init__(self, port=0):
                 self.pump = pump.Pump(port)
 
                 self.builder = gtk.Builder()
-                self.builder.add_from_file("pump.glade")
+                glade = os.path.join(resource_dir, "pump.glade")
+                self.builder.add_from_file(glade)
                 self.builder.connect_signals(self)
 
                 self.win = self.builder.get_object("main_window")
