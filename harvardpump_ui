@@ -19,14 +19,24 @@ class PumpWindow(object):
                 self.range_store = self.builder.get_object('range_store')
                 self.win.show_all()
 
+                self.get_initial_config()
+                self.poll_version()
                 self.poll_status()
+
+                GLib.timeout_add_seconds(1, self.poll_status)
+
+        def get_initial_config(self):
                 diam = self.pump.get_diameter()
                 self.builder.get_object('diameter').set_value(diam)
+
                 rate,unit = self.pump.get_flow_rate()
                 self.builder.get_object('flow_rate').set_value(rate)
 
-                GLib.timeout_add_seconds(1, self.poll_status)
-                self.poll_version()
+                target = self.pump.get_target_volume()
+                self.builder.get_object('volume_target').set_value(target)
+
+                if self.pump.get_mode() == 'volume':
+                        self.builder.get_object('target_enabled_action').set_active(True)
 
         def poll_version(self):
                 status = None
@@ -61,7 +71,7 @@ class PumpWindow(object):
                 rate,unit = self.pump.get_flow_rate()
                 vol_unit, t_unit = ranges[unit]
                 self.builder.get_object('flow_rate_status').set_text(str(rate))
-                self.builder.get_object('flow_rate_status_unit').set_text('%s/%s' % (vol_unit, t_unit))
+                self.builder.get_object('flow_rate_status_unit').set_text(unit.replace('u', u'μ'))
 
 
                 vol = self.pump.get_volume_accum()
@@ -110,7 +120,8 @@ class PumpWindow(object):
                 self.set_flow_rate()
                 iter = self.builder.get_object('range').get_active_iter()
                 flow_unit = self.range_store.get_value(iter, 0)
-                vol_unit = self.range_store.get_value(iter, 1)
+                #vol_unit = self.range_store.get_value(iter, 1)
+                vol_unit = 'mL'   # In case of Model 44
                 self.builder.get_object('target_volume_unit').set_text(vol_unit)
 
         def flow_rate_value_changed_cb(self, spin_but):

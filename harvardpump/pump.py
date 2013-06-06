@@ -253,4 +253,4 @@ class Model44(object):
         def get_mode(self):
                 self._write('MOD')
                 mode = self._read_reply()
-                return mode.lower()
+                return mode.lower().strip()
