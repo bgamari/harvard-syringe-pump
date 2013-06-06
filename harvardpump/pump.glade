@@ -1,29 +1,66 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk+" version="2.16"/>
   <!-- interface-naming-policy project-wide -->
+  <object class="GtkAction" id="clear_volume_action">
+    <property name="label">Clear volume accumulator</property>
+    <property name="stock_id">gtk-clear</property>
+    <signal name="activate" handler="clear_volume_action_activate_cb" swapped="no"/>
+  </object>
+  <object class="GtkAction" id="edit_diameter_action">
+    <property name="label" translatable="yes">Set</property>
+    <signal name="activate" handler="edit_diameter_action_activate_cb" swapped="no"/>
+  </object>
+  <object class="GtkToggleAction" id="run_action">
+    <property name="label">Pump Running</property>
+    <property name="stock_id">gtk-media-play</property>
+    <signal name="toggled" handler="run_action_toggled_cb" swapped="no"/>
+  </object>
+  <object class="GtkToggleAction" id="target_enabled_action">
+    <property name="label">Target volume enabled</property>
+    <signal name="toggled" handler="target_enabled_action_toggled_cb" swapped="no"/>
+  </object>
+  <object class="GtkAdjustment" id="diameter_adj">
+    <property name="upper">100</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="flow_rate_adj">
+    <property name="upper">9999</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
+  </object>
+  <object class="GtkImage" id="image2">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-no</property>
+  </object>
   <object class="GtkWindow" id="main_window">
+    <property name="can_focus">False</property>
     <child>
       <object class="GtkVBox" id="vbox1">
         <property name="visible">True</property>
-        <property name="orientation">vertical</property>
+        <property name="can_focus">False</property>
         <child>
           <object class="GtkTable" id="table1">
             <property name="visible">True</property>
+            <property name="can_focus">False</property>
             <property name="n_rows">4</property>
             <property name="n_columns">2</property>
             <child>
               <object class="GtkLabel" id="label2">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <property name="label" translatable="yes">Range</property>
               </object>
             </child>
             <child>
               <object class="GtkComboBox" id="range">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <property name="model">range_store</property>
                 <property name="active">0</property>
-                <signal name="changed" handler="range_changed_cb"/>
+                <signal name="changed" handler="range_changed_cb" swapped="no"/>
                 <child>
                   <object class="GtkCellRendererText" id="cellrenderertext1"/>
                   <attributes>
@@ -54,6 +91,7 @@
             <child>
               <object class="GtkLabel" id="label3">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <property name="label" translatable="yes">Flow Rate</property>
               </object>
               <packing>
@@ -64,25 +102,35 @@
             <child>
               <object class="GtkHBox" id="hbox3">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <child>
                   <object class="GtkSpinButton" id="flow_rate">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="invisible_char">&#x25CF;</property>
+                    <property name="invisible_char">●</property>
+                    <property name="primary_icon_activatable">False</property>
+                    <property name="secondary_icon_activatable">False</property>
+                    <property name="primary_icon_sensitive">True</property>
+                    <property name="secondary_icon_sensitive">True</property>
                     <property name="adjustment">flow_rate_adj</property>
                     <property name="digits">2</property>
-                    <signal name="change_value" handler="flow_rate_change_value_cb"/>
+                    <signal name="value-changed" handler="flow_rate_value_changed_cb" swapped="no"/>
                   </object>
                   <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
                     <property name="position">0</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkLabel" id="flow_rate_unit">
                     <property name="visible">True</property>
+                    <property name="can_focus">False</property>
                     <property name="label" translatable="yes">label</property>
                   </object>
                   <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
@@ -97,24 +145,34 @@
             <child>
               <object class="GtkHBox" id="hbox4">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <child>
                   <object class="GtkSpinButton" id="volume_target">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="invisible_char">&#x25CF;</property>
+                    <property name="invisible_char">●</property>
+                    <property name="primary_icon_activatable">False</property>
+                    <property name="secondary_icon_activatable">False</property>
+                    <property name="primary_icon_sensitive">True</property>
+                    <property name="secondary_icon_sensitive">True</property>
                     <property name="adjustment">volume_adj</property>
                     <property name="digits">2</property>
                   </object>
                   <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
                     <property name="position">0</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkLabel" id="target_volume_unit">
                     <property name="visible">True</property>
+                    <property name="can_focus">False</property>
                     <property name="label" translatable="yes">label</property>
                   </object>
                   <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
@@ -129,6 +187,7 @@
             <child>
               <object class="GtkLabel" id="label1">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <property name="label" translatable="yes">Direction</property>
               </object>
               <packing>
@@ -139,18 +198,17 @@
             <child>
               <object class="GtkVBox" id="vbox2">
                 <property name="visible">True</property>
-                <property name="orientation">vertical</property>
+                <property name="can_focus">False</property>
                 <child>
                   <object class="GtkRadioButton" id="dir_forward">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
-                    <property name="use_action_appearance">True</property>
-                    <property name="related_action">dir_forward_action</property>
                     <property name="draw_indicator">True</property>
-                    <property name="group">dir_backward</property>
                   </object>
                   <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
                     <property name="position">0</property>
                   </packing>
                 </child>
@@ -159,11 +217,12 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
-                    <property name="use_action_appearance">True</property>
-                    <property name="related_action">dir_backward_action</property>
                     <property name="draw_indicator">True</property>
+                    <property name="group">dir_forward</property>
                   </object>
                   <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
@@ -177,6 +236,8 @@
             </child>
           </object>
           <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
             <property name="position">0</property>
           </packing>
         </child>
@@ -185,11 +246,12 @@
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
-            <property name="use_action_appearance">True</property>
             <property name="related_action">run_action</property>
             <property name="image">image2</property>
           </object>
           <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
             <property name="position">1</property>
           </packing>
         </child>
@@ -201,34 +263,41 @@
             <child>
               <object class="GtkTable" id="table2">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <property name="n_rows">4</property>
                 <property name="n_columns">4</property>
                 <child>
                   <object class="GtkLabel" id="label5">
                     <property name="visible">True</property>
+                    <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Status</property>
                   </object>
                 </child>
                 <child>
                   <object class="GtkHBox" id="hbox1">
                     <property name="visible">True</property>
+                    <property name="can_focus">False</property>
                     <child>
                       <object class="GtkImage" id="status_image">
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                         <property name="stock">gtk-media-stop</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
+                        <property name="fill">True</property>
                         <property name="position">0</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkLabel" id="status_label">
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Not running</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
+                        <property name="fill">True</property>
                         <property name="position">1</property>
                       </packing>
                     </child>
@@ -241,6 +310,7 @@
                 <child>
                   <object class="GtkLabel" id="label7">
                     <property name="visible">True</property>
+                    <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Dispensed Volume</property>
                   </object>
                   <packing>
@@ -251,6 +321,7 @@
                 <child>
                   <object class="GtkLabel" id="label6">
                     <property name="visible">True</property>
+                    <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Syringe Diameter</property>
                   </object>
                   <packing>
@@ -261,6 +332,7 @@
                 <child>
                   <object class="GtkLabel" id="label9">
                     <property name="visible">True</property>
+                    <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Flow Rate</property>
                   </object>
                   <packing>
@@ -273,7 +345,6 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <property name="use_action_appearance">True</property>
                     <property name="related_action">clear_volume_action</property>
                     <property name="use_stock">True</property>
                   </object>
@@ -287,6 +358,7 @@
                 <child>
                   <object class="GtkLabel" id="volume_unit">
                     <property name="visible">True</property>
+                    <property name="can_focus">False</property>
                     <property name="label" translatable="yes">label</property>
                   </object>
                   <packing>
@@ -299,6 +371,7 @@
                 <child>
                   <object class="GtkLabel" id="volume">
                     <property name="visible">True</property>
+                    <property name="can_focus">False</property>
                     <property name="label" translatable="yes">-</property>
                   </object>
                   <packing>
@@ -326,6 +399,7 @@
                 <child>
                   <object class="GtkLabel" id="label8">
                     <property name="visible">True</property>
+                    <property name="can_focus">False</property>
                     <property name="label" translatable="yes">mm</property>
                   </object>
                   <packing>
@@ -339,7 +413,11 @@
                   <object class="GtkSpinButton" id="diameter">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="invisible_char">&#x25CF;</property>
+                    <property name="invisible_char">●</property>
+                    <property name="primary_icon_activatable">False</property>
+                    <property name="secondary_icon_activatable">False</property>
+                    <property name="primary_icon_sensitive">True</property>
+                    <property name="secondary_icon_sensitive">True</property>
                     <property name="adjustment">diameter_adj</property>
                     <property name="digits">2</property>
                   </object>
@@ -353,6 +431,7 @@
                 <child>
                   <object class="GtkLabel" id="flow_rate_status">
                     <property name="visible">True</property>
+                    <property name="can_focus">False</property>
                     <property name="label" translatable="yes">label</property>
                   </object>
                   <packing>
@@ -365,6 +444,7 @@
                 <child>
                   <object class="GtkLabel" id="flow_rate_status_unit">
                     <property name="visible">True</property>
+                    <property name="can_focus">False</property>
                     <property name="label" translatable="yes">label</property>
                   </object>
                   <packing>
@@ -388,64 +468,55 @@
             <child type="label">
               <object class="GtkLabel" id="label4">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <property name="label" translatable="yes">Status</property>
               </object>
             </child>
           </object>
           <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
             <property name="position">2</property>
           </packing>
         </child>
         <child>
           <object class="GtkStatusbar" id="statusbar1">
             <property name="visible">True</property>
+            <property name="can_focus">False</property>
             <property name="spacing">2</property>
             <child>
               <object class="GtkImage" id="conn_status_img">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <property name="stock">gtk-no</property>
               </object>
               <packing>
                 <property name="expand">False</property>
+                <property name="fill">True</property>
                 <property name="position">1</property>
               </packing>
             </child>
             <child>
               <object class="GtkLabel" id="conn_status">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <property name="label" translatable="yes">Not connected</property>
               </object>
               <packing>
                 <property name="expand">False</property>
+                <property name="fill">True</property>
                 <property name="position">2</property>
               </packing>
             </child>
           </object>
           <packing>
             <property name="expand">False</property>
+            <property name="fill">True</property>
             <property name="position">3</property>
           </packing>
         </child>
       </object>
     </child>
-  </object>
-  <object class="GtkImage" id="image2">
-    <property name="visible">True</property>
-    <property name="stock">gtk-no</property>
-  </object>
-  <object class="GtkToggleAction" id="run_action">
-    <property name="label">Pump Running</property>
-    <property name="stock_id">gtk-media-play</property>
-    <signal name="toggled" handler="run_action_toggled_cb"/>
-  </object>
-  <object class="GtkAction" id="clear_volume_action">
-    <property name="label">Clear volume accumulator</property>
-    <property name="stock_id">gtk-clear</property>
-    <signal name="activate" handler="clear_volume_action_activate_cb"/>
-  </object>
-  <object class="GtkToggleAction" id="target_enabled_action">
-    <property name="label">Target volume enabled</property>
-    <signal name="toggled" handler="target_enabled_action_toggled_cb"/>
   </object>
   <object class="GtkListStore" id="range_store">
     <columns>
@@ -458,8 +529,8 @@
     </columns>
     <data>
       <row>
-        <col id="0" translatable="yes">&#x3BC;L/min</col>
-        <col id="1" translatable="yes">&#x3BC;L</col>
+        <col id="0" translatable="yes">μL/min</col>
+        <col id="1" translatable="yes">μL</col>
         <col id="2" translatable="yes">uL/min</col>
       </row>
       <row>
@@ -468,8 +539,8 @@
         <col id="2" translatable="yes">mL/min</col>
       </row>
       <row>
-        <col id="0" translatable="yes">&#x3BC;L/hr</col>
-        <col id="1" translatable="yes">&#x3BC;L</col>
+        <col id="0" translatable="yes">μL/hr</col>
+        <col id="1" translatable="yes">μL</col>
         <col id="2" translatable="yes">uL/hr</col>
       </row>
       <row>
@@ -479,35 +550,9 @@
       </row>
     </data>
   </object>
-  <object class="GtkAction" id="edit_diameter_action">
-    <signal name="activate" handler="edit_diameter_action_activate_cb"/>
-  </object>
-  <object class="GtkAdjustment" id="diameter_adj">
-    <property name="upper">100</property>
-    <property name="step_increment">1</property>
-    <property name="page_increment">10</property>
-  </object>
-  <object class="GtkAdjustment" id="flow_rate_adj">
-    <property name="upper">9999</property>
-    <property name="step_increment">1</property>
-    <property name="page_increment">10</property>
-  </object>
   <object class="GtkAdjustment" id="volume_adj">
     <property name="upper">100</property>
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
-  </object>
-  <object class="GtkRadioAction" id="dir_forward_action">
-    <property name="label">Forward</property>
-    <property name="draw_as_radio">True</property>
-    <property name="value">1</property>
-    <signal name="changed" handler="direction_changed_cb"/>
-  </object>
-  <object class="GtkRadioAction" id="dir_backward_action">
-    <property name="label">Backward</property>
-    <property name="draw_as_radio">True</property>
-    <property name="value">-1</property>
-    <property name="group">dir_forward_action</property>
-    <signal name="changed" handler="direction_changed_cb"/>
   </object>
 </interface>

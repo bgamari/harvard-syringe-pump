@@ -7,7 +7,7 @@ import pkgutil
 
 class PumpWindow(object):
         def __init__(self, port=0):
-                self.pump = pump.Pump(port)
+                self.pump = pump.Model44(port)
 
                 self.builder = gtk.Builder()
                 src = pkgutil.get_data('harvardpump', 'pump.glade')
@@ -41,7 +41,7 @@ class PumpWindow(object):
                         'mL/hr' : (u'mL', 'hr')
                 }
 
-                vol_unit, t_unit = ranges[self.pump.get_range()]
+                vol_unit, t_unit = ranges['uL/min'] #ranges[self.pump.get_range()]
                 stock, msg = messages[self.pump.get_status()]
                 self.builder.get_object('status_image').set_from_stock(stock, gtk.ICON_SIZE_BUTTON)
                 self.builder.get_object('status_label').set_text(msg)
@@ -68,13 +68,9 @@ class PumpWindow(object):
                 return True
 
         def direction_changed_cb(self, action, value):
-                status = self.pump.get_status()
                 dir = action.get_current_value()
-                print status, dir
-                if status == 'running' and dir == -1 or \
-                   status == 'reverse' and dir == +1 or \
-                   status == 'stalled':
-                        self.pump.reverse()
+                print dir
+                self.pump.set_direction(dir)
                         
         def edit_diameter_action_activate_cb(self, action):
                 diam = self.builder.get_object('diameter').get_value()
@@ -94,6 +90,7 @@ class PumpWindow(object):
 
         def clear_volume_action_activate_cb(self, action):
                 self.pump.clear_volume_accum()
+                self.poll_status()
 
         def target_enabled_action_toggled_cb(self, action):
                 if action.get_active():
@@ -113,7 +110,7 @@ class PumpWindow(object):
                 self.builder.get_object('flow_rate_unit').set_text(flow_unit)
                 self.builder.get_object('target_volume_unit').set_text(vol_unit)
 
-        def flow_rate_change_value_cb(self, spin_but):
+        def flow_rate_value_changed_cb(self, spin_but):
                 self.set_flow_rate()
 
         def set_flow_rate(self):
@@ -122,5 +119,5 @@ class PumpWindow(object):
                 value = self.builder.get_object('flow_rate').get_value()
                 self.pump.set_flow_rate(value, range)
                 
-win = PumpWindow('/dev/ttyS0')
+win = PumpWindow('/dev/ttyUSB0')
 gtk.main()
