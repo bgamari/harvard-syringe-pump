@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <requires lib="gtk+" version="2.16"/>
-  <!-- interface-naming-policy project-wide -->
+  <!-- interface-requires gtk+ 3.0 -->
   <object class="GtkAction" id="clear_volume_action">
     <property name="label">Clear volume accumulator</property>
     <property name="stock_id">gtk-clear</property>
@@ -10,6 +9,20 @@
   <object class="GtkAction" id="edit_diameter_action">
     <property name="label" translatable="yes">Set</property>
     <signal name="activate" handler="edit_diameter_action_activate_cb" swapped="no"/>
+  </object>
+  <object class="GtkRadioAction" id="forward_action">
+    <property name="label" translatable="yes">Forward</property>
+    <property name="stock_id">gtk-go-forward</property>
+    <property name="draw_as_radio">True</property>
+    <property name="value">1</property>
+    <signal name="changed" handler="direction_changed_cb" swapped="no"/>
+  </object>
+  <object class="GtkRadioAction" id="reverse_action">
+    <property name="label" translatable="yes">Reverse</property>
+    <property name="stock_id">gtk-go-back</property>
+    <property name="draw_as_radio">True</property>
+    <property name="group">forward_action</property>
+    <signal name="changed" handler="direction_changed_cb" swapped="no"/>
   </object>
   <object class="GtkToggleAction" id="run_action">
     <property name="label">Pump Running</property>
@@ -34,6 +47,38 @@
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="stock">gtk-no</property>
+  </object>
+  <object class="GtkListStore" id="range_store">
+    <columns>
+      <!-- column-name rate_unit -->
+      <column type="gchararray"/>
+      <!-- column-name vol_unit -->
+      <column type="gchararray"/>
+      <!-- column-name internal -->
+      <column type="gchararray"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0" translatable="yes">μL/min</col>
+        <col id="1" translatable="yes">μL</col>
+        <col id="2" translatable="yes">uL/min</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">mL/min</col>
+        <col id="1" translatable="yes">mL</col>
+        <col id="2" translatable="yes">mL/min</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">μL/hr</col>
+        <col id="1" translatable="yes">μL</col>
+        <col id="2" translatable="yes">uL/hr</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">mL/hr</col>
+        <col id="1" translatable="yes">mL</col>
+        <col id="2" translatable="yes">mL/hr</col>
+      </row>
+    </data>
   </object>
   <object class="GtkWindow" id="main_window">
     <property name="can_focus">False</property>
@@ -77,10 +122,11 @@
             <child>
               <object class="GtkCheckButton" id="volume_target_enabled">
                 <property name="label" translatable="yes">Target Volume</property>
+                <property name="related_action">target_enabled_action</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
-                <property name="related_action">target_enabled_action</property>
+                <property name="xalign">0.5</property>
                 <property name="draw_indicator">True</property>
               </object>
               <packing>
@@ -110,8 +156,6 @@
                     <property name="invisible_char">●</property>
                     <property name="primary_icon_activatable">False</property>
                     <property name="secondary_icon_activatable">False</property>
-                    <property name="primary_icon_sensitive">True</property>
-                    <property name="secondary_icon_sensitive">True</property>
                     <property name="adjustment">flow_rate_adj</property>
                     <property name="digits">2</property>
                     <signal name="value-changed" handler="flow_rate_value_changed_cb" swapped="no"/>
@@ -153,8 +197,6 @@
                     <property name="invisible_char">●</property>
                     <property name="primary_icon_activatable">False</property>
                     <property name="secondary_icon_activatable">False</property>
-                    <property name="primary_icon_sensitive">True</property>
-                    <property name="secondary_icon_sensitive">True</property>
                     <property name="adjustment">volume_adj</property>
                     <property name="digits">2</property>
                   </object>
@@ -201,9 +243,11 @@
                 <property name="can_focus">False</property>
                 <child>
                   <object class="GtkRadioButton" id="dir_forward">
+                    <property name="related_action">forward_action</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
+                    <property name="xalign">0.5</property>
                     <property name="draw_indicator">True</property>
                   </object>
                   <packing>
@@ -214,9 +258,11 @@
                 </child>
                 <child>
                   <object class="GtkRadioButton" id="dir_backward">
+                    <property name="related_action">reverse_action</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
+                    <property name="xalign">0.5</property>
                     <property name="draw_indicator">True</property>
                     <property name="group">dir_forward</property>
                   </object>
@@ -243,10 +289,10 @@
         </child>
         <child>
           <object class="GtkToggleButton" id="run_button">
+            <property name="related_action">run_action</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
-            <property name="related_action">run_action</property>
             <property name="image">image2</property>
           </object>
           <packing>
@@ -267,6 +313,9 @@
                 <property name="n_rows">4</property>
                 <property name="n_columns">4</property>
                 <child>
+                  <placeholder/>
+                </child>
+                <child>
                   <object class="GtkLabel" id="label5">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
@@ -281,7 +330,7 @@
                       <object class="GtkImage" id="status_image">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="stock">gtk-media-stop</property>
+                        <property name="stock">gtk-dialog-warning</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -342,10 +391,10 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="clear_volume">
+                    <property name="related_action">clear_volume_action</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <property name="related_action">clear_volume_action</property>
                     <property name="use_stock">True</property>
                   </object>
                   <packing>
@@ -383,10 +432,10 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="edit_diameter">
+                    <property name="related_action">edit_diameter_action</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <property name="related_action">edit_diameter_action</property>
                     <property name="use_underline">True</property>
                   </object>
                   <packing>
@@ -395,6 +444,9 @@
                     <property name="top_attach">3</property>
                     <property name="bottom_attach">4</property>
                   </packing>
+                </child>
+                <child>
+                  <placeholder/>
                 </child>
                 <child>
                   <object class="GtkLabel" id="label8">
@@ -416,8 +468,6 @@
                     <property name="invisible_char">●</property>
                     <property name="primary_icon_activatable">False</property>
                     <property name="secondary_icon_activatable">False</property>
-                    <property name="primary_icon_sensitive">True</property>
-                    <property name="secondary_icon_sensitive">True</property>
                     <property name="adjustment">diameter_adj</property>
                     <property name="digits">2</property>
                   </object>
@@ -453,12 +503,6 @@
                     <property name="top_attach">1</property>
                     <property name="bottom_attach">2</property>
                   </packing>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
                 </child>
                 <child>
                   <placeholder/>
@@ -517,38 +561,6 @@
         </child>
       </object>
     </child>
-  </object>
-  <object class="GtkListStore" id="range_store">
-    <columns>
-      <!-- column-name rate_unit -->
-      <column type="gchararray"/>
-      <!-- column-name vol_unit -->
-      <column type="gchararray"/>
-      <!-- column-name internal -->
-      <column type="gchararray"/>
-    </columns>
-    <data>
-      <row>
-        <col id="0" translatable="yes">μL/min</col>
-        <col id="1" translatable="yes">μL</col>
-        <col id="2" translatable="yes">uL/min</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">mL/min</col>
-        <col id="1" translatable="yes">mL</col>
-        <col id="2" translatable="yes">mL/min</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">μL/hr</col>
-        <col id="1" translatable="yes">μL</col>
-        <col id="2" translatable="yes">uL/hr</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">mL/hr</col>
-        <col id="1" translatable="yes">mL</col>
-        <col id="2" translatable="yes">mL/hr</col>
-      </row>
-    </data>
   </object>
   <object class="GtkAdjustment" id="volume_adj">
     <property name="upper">100</property>

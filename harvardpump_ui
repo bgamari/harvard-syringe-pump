@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # vim: set fileencoding=UTF-8 :
 
-import gtk, glib
+from gi.repository import Gtk, GLib, GObject
 from harvardpump import pump
 import pkgutil
 
@@ -9,13 +9,13 @@ class PumpWindow(object):
         def __init__(self, port=0):
                 self.pump = pump.Model44(port)
 
-                self.builder = gtk.Builder()
+                self.builder = Gtk.Builder()
                 src = pkgutil.get_data('harvardpump', 'pump.glade')
                 self.builder.add_from_string(src)
                 self.builder.connect_signals(self)
 
                 self.win = self.builder.get_object("main_window")
-                self.win.connect('destroy', gtk.main_quit)
+                self.win.connect('destroy', Gtk.main_quit)
                 self.range_store = self.builder.get_object('range_store')
                 self.win.show_all()
 
@@ -25,14 +25,14 @@ class PumpWindow(object):
                 rate = self.pump.get_flow_rate()
                 self.builder.get_object('flow_rate').set_value(rate)
 
-                glib.timeout_add_seconds(2, self.poll_status)
+                GLib.timeout_add_seconds(2, self.poll_status)
 
         def poll_status(self):
                 messages = {
-                        'running': ('gtk-forward', 'Running'),
-                        'reverse': ('gtk-back', 'Running Reverse'),
-                        'stalled': ('gtk-no', 'Stalled'),
-                        'stopped': ('gtk-stop', 'Stopped') 
+                        'running': ('gtk-go-forward', 'Running'),
+                        'reverse': ('gtk-go-back', 'Running Reverse'),
+                        'stalled': ('gtk-dialog-warning', 'Stalled'),
+                        'stopped': ('gtk-media-stop', 'Stopped') 
                 }
                 ranges = {
                         'uL/min': (u'μL', 'min'),
@@ -43,7 +43,7 @@ class PumpWindow(object):
 
                 vol_unit, t_unit = ranges['uL/min'] #ranges[self.pump.get_range()]
                 stock, msg = messages[self.pump.get_status()]
-                self.builder.get_object('status_image').set_from_stock(stock, gtk.ICON_SIZE_BUTTON)
+                self.builder.get_object('status_image').set_from_stock(stock, Gtk.IconSize.BUTTON)
                 self.builder.get_object('status_label').set_text(msg)
 
                 status = None
@@ -55,7 +55,7 @@ class PumpWindow(object):
                         status = "Not connected"
 
                 self.builder.get_object('conn_status').set_text(status)
-                self.builder.get_object('conn_status_img').set_from_stock(img, gtk.ICON_SIZE_BUTTON)
+                self.builder.get_object('conn_status_img').set_from_stock(img, Gtk.IconSize.BUTTON)
 
                 vol = self.pump.get_volume_accum()
                 self.builder.get_object('volume').set_text(str(vol))
@@ -120,4 +120,4 @@ class PumpWindow(object):
                 self.pump.set_flow_rate(value, range)
                 
 win = PumpWindow('/dev/ttyUSB0')
-gtk.main()
+Gtk.main()
