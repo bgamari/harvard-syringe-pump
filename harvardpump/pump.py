@@ -127,13 +127,15 @@ class Model44(object):
                 ':': 'stopped',
                 '>': 'running',
                 '<': 'reverse',
-                '*': 'stalled',
-                '^': 'sispense trigger waiting',
+                '/': 'paused',
+                '*': 'stopped',
+                '^': 'wait', # dispense trigger wait
                 }
         ranges = [ 'uL/min', 'mL/min', 'uL/hr' , 'mL/hr' ]
 
         def __init__(self, port=0):
                 self.port = serial.Serial(port, baudrate=9600, stopbits=2)
+                self.last_status = 'stopped'
 
         def _write(self, cmd):
                 logging.debug('write: %s' % cmd)
@@ -149,16 +151,17 @@ class Model44(object):
                 s = ''
                 for i in range(50):
                         s += self.port.read(1)
-                        #logging.debug('read: %s' % s[-1])
                         if s[-1] == '\r':
                                 reply = s
-                        if s[-1] in Model44.prompts:
+                        if len(s) >= 2 and s[-2].isdigit() and s[-1] in Model44.prompts:
                                 prompt = Model44.prompts[s[-1]]
                                 break
 
                 logging.debug("read: %s" % s.encode('string_escape'))
                 if prompt == None:
                         raise RuntimeError('Expected prompt, got "%s"' % s.encode('string_escape'))
+                else:
+                        self.last_status = prompt
                 return reply
 
         def _read_value(self):
@@ -171,7 +174,7 @@ class Model44(object):
 
         def get_status(self):
                 """ Get status of pump """
-                return 'running' # TODO
+                return self.last_status
 
         def set_diameter(self, value):
                 """ Set diameter of syringe in millimeters """
@@ -190,14 +193,18 @@ class Model44(object):
                 return f
         
         def get_flow_rate(self):
+                units = { 'ml/mn': 'mL/min',
+                          'ul/mn': 'mL/min',
+                          'ml/hr': 'mL/hr',
+                          'ul/hr': 'uL/hr',
+                        }
                 self._write('RAT')
                 s = self._read_reply()
-                print s.split()
-                value, units = s.split()
-                return float(value)
+                value, unit = s.split()
+                return float(value), units[unit]
 
         get_diameter = __value_func('DIA')
-        get_target_volume = __value_func('TAR')
+        get_target_volume = __value_func('TGT')
         get_volume_accum = __value_func('DEL')
 
         def __command_func(cmd):
@@ -213,7 +220,7 @@ class Model44(object):
         reverse = __command_func('DIR REV')
 
         def set_direction(self, dir):
-                d = 'FWD' if dir > 0 else 'REV'
+                d = 'INF' if dir > 0 else 'REF'
                 self._write('DIR %s' % d)
                 self._read_reply()
 
@@ -234,3 +241,16 @@ class Model44(object):
                 """ Set the target volume """
                 self._write("TGT " + self._format_float(value))
                 self._read_reply()
+
+        def set_pump_mode(self):
+                self._write('MOD PMP')
+                self._read_reply()
+
+        def set_volume_mode(self):
+                self._write('MOD VOL')
+                self._read_reply()
+
+        def get_mode(self):
+                self._write('MOD')
+                mode = self._read_reply()
+                return mode.lower()

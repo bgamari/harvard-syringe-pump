@@ -22,17 +22,30 @@ class PumpWindow(object):
                 self.poll_status()
                 diam = self.pump.get_diameter()
                 self.builder.get_object('diameter').set_value(diam)
-                rate = self.pump.get_flow_rate()
+                rate,unit = self.pump.get_flow_rate()
                 self.builder.get_object('flow_rate').set_value(rate)
 
-                GLib.timeout_add_seconds(2, self.poll_status)
+                GLib.timeout_add_seconds(1, self.poll_status)
+                self.poll_version()
+
+        def poll_version(self):
+                status = None
+                img = 'gtk-no'
+                try:
+                        status = "Connected to pump version %s" % self.pump.get_version()
+                        img = 'gtk-yes'
+                except:
+                        status = "Not connected"
+                self.builder.get_object('conn_status').set_text(status)
+                self.builder.get_object('conn_status_img').set_from_stock(img, Gtk.IconSize.BUTTON)
 
         def poll_status(self):
                 messages = {
                         'running': ('gtk-go-forward', 'Running'),
                         'reverse': ('gtk-go-back', 'Running Reverse'),
                         'stalled': ('gtk-dialog-warning', 'Stalled'),
-                        'stopped': ('gtk-media-stop', 'Stopped') 
+                        'paused':  ('gtk-media-pause', 'Paused'),
+                        'stopped': ('gtk-media-stop', 'Stopped'),
                 }
                 ranges = {
                         'uL/min': (u'μL', 'min'),
@@ -41,35 +54,25 @@ class PumpWindow(object):
                         'mL/hr' : (u'mL', 'hr')
                 }
 
-                vol_unit, t_unit = ranges['uL/min'] #ranges[self.pump.get_range()]
                 stock, msg = messages[self.pump.get_status()]
                 self.builder.get_object('status_image').set_from_stock(stock, Gtk.IconSize.BUTTON)
                 self.builder.get_object('status_label').set_text(msg)
 
-                status = None
-                img = 'gtk-no'
-                try:
-                        status = "Connected to pump version %s" % self.pump.get_version()
-                        img = 'gtk-yes'
-                except:
-                        status = "Not connected"
+                rate,unit = self.pump.get_flow_rate()
+                vol_unit, t_unit = ranges[unit]
+                self.builder.get_object('flow_rate_status').set_text(str(rate))
+                self.builder.get_object('flow_rate_status_unit').set_text('%s/%s' % (vol_unit, t_unit))
 
-                self.builder.get_object('conn_status').set_text(status)
-                self.builder.get_object('conn_status_img').set_from_stock(img, Gtk.IconSize.BUTTON)
 
                 vol = self.pump.get_volume_accum()
                 self.builder.get_object('volume').set_text(str(vol))
                 self.builder.get_object('volume_unit').set_text(vol_unit)
 
-                rate = self.pump.get_flow_rate()
-                self.builder.get_object('flow_rate_status').set_text(str(rate))
-                self.builder.get_object('flow_rate_status_unit').set_text('%s/%s' % (vol_unit, t_unit))
-
                 return True
 
-        def direction_changed_cb(self, action, value):
+        def direction_changed_cb(self, action):
                 dir = action.get_current_value()
-                print dir
+                print action.props.current_value
                 self.pump.set_direction(dir)
                         
         def edit_diameter_action_activate_cb(self, action):
@@ -96,18 +99,18 @@ class PumpWindow(object):
                 if action.get_active():
                         self.set_target_volume()
                 else:
-                        self.pump.clear_target()
+                        self.pump.set_pump_mode()
 
         def set_target_volume(self):
                 target = self.builder.get_object('volume_target').get_value()
                 self.pump.set_target_volume(target)
+                self.pump.set_volume_mode()
 
         def range_changed_cb(self, combo):
                 self.set_flow_rate()
                 iter = self.builder.get_object('range').get_active_iter()
                 flow_unit = self.range_store.get_value(iter, 0)
                 vol_unit = self.range_store.get_value(iter, 1)
-                self.builder.get_object('flow_rate_unit').set_text(flow_unit)
                 self.builder.get_object('target_volume_unit').set_text(vol_unit)
 
         def flow_rate_value_changed_cb(self, spin_but):
